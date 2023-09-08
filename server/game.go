@@ -26,7 +26,7 @@ type NextMove struct {
 
 // UpdatenextMove aggiorna la griglia di gioco e la invia a entrambi i giocatori.
 func UpdatenextMove(player1, player2 *websocket.Conn, nextMove NextMove) error {
-	// Converti nextMove in formato JSON o in un altro formato comprensibile per il frontend
+	
 	nextMoveJSON, err := json.Marshal(nextMove)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func UpdatenextMove(player1, player2 *websocket.Conn, nextMove NextMove) error {
 
 // UpdateGameStatus aggiorna lo stato della partita e lo invia a entrambi i giocatori.
 func UpdateGameStatus(player1, player2 *websocket.Conn, gameStatus GameStatus) error {
-	// Converti gameStatus in formato JSON o in un altro formato comprensibile per il frontend
+	
 	gameStatusJSON, err := json.Marshal(gameStatus)
 	if err != nil {
 		return err

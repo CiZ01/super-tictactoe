@@ -7,3 +7,5 @@ type User struct {
 	ID   string
 	Conn *websocket.Conn // Connessione WebSocket dell'utente
 }
+
+
