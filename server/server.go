@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"sync"
@@ -26,7 +25,7 @@ var (
 	connMutex   = sync.Mutex{}
 
 	// Lobby del gioco
-	lobbies = make(map[string]*Lobby)
+	lobbies = []Lobby{}
 )
 
 func handleWebSocketConnection(w http.ResponseWriter, r *http.Request) {
@@ -50,86 +49,11 @@ func handleWebSocketConnection(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		// Decodifica il messaggio in base al tipo di messaggio
-		switch messageType {
-		case websocket.TextMessage:
-			var message map[string]interface{}
-			if err := json.Unmarshal(p, &message); err != nil {
-				log.Println("Errore nell'analisi del messaggio JSON:", err)
-				continue
-			}
-
-			// Gestisci il messaggio in base al suo tipo
-			messageType := message["type"].(string)
-			switch messageType {
-			case "registration":
-				handleRegistration(conn, message)
-			case "move":
-				handleMove(conn, message)
-			case "new_lobby":
-				handleNewLobby(conn, message)
-			case "win":
-				handleWin(conn, message)
-			default:
-				log.Println("Tipo di messaggio non valido:", messageType)
-			}
-		}
-
-		// Rimuovi la connessione dalla mappa quando il client si disconnette
-		connMutex.Lock()
-		delete(connections, conn)
-		connMutex.Unlock()
+		// Gestisci il messaggio in base al suo tipo
+		handler(messageType, p, conn)
 	}
-}
-
-// just for testing
-func handleRegistration(conn *websocket.Conn, message map[string]interface{}) {
-	connections[conn] = connectionStatus{StatusCode: 1, User: User{ID: "1", Conn: conn}}
-
-	// Invia un messaggio di conferma di registrazione al giocatore
-	response := map[string]interface{}{
-		"type":    "registration_success",
-		"message": "Registrazione completata con successo",
-	}
-	conn.WriteJSON(response)
-}
-
-func handleNewLobby(conn *websocket.Conn, message map[string]interface{}) {
-	// Esegui la logica del gioco qui
-	for l := range lobbies{
-		if l.
-		}
-	}
-	newLobby := NewLobby()
-	newLobby.AddUser(&User{ID: "1", Conn: conn})
-	conn.WriteJSON(response)
-
-	// Puoi anche aggiornare gli altri giocatori con lo stato aggiornato del gioco
-	// Utilizzando la funzione UpdateGameBoard o UpdateGameStatus che abbiamo discusso prima
-}
-
-func handleMove(conn *websocket.Conn, message map[string]interface{}) {
-	// Esegui la logica del gioco qui
-
-	// Ad esempio, puoi inviare una risposta al giocatore che ha effettuato la mossa
-	response := map[string]interface{}{
-		"type": "move_confirmation",
-	}
-	conn.WriteJSON(response)
-
-	// Puoi anche aggiornare gli altri giocatori con lo stato aggiornato del gioco
-	// Utilizzando la funzione UpdateGameBoard o UpdateGameStatus che abbiamo discusso prima
-}
-
-func handleWin(conn *websocket.Conn, message map[string]interface{}) {
-	// Esegui la logica del gioco qui
-
-	// Ad esempio, puoi inviare una risposta al giocatore che ha effettuato la mossa
-	response := map[string]interface{}{
-		"type": "win_confirmation",
-	}
-	conn.WriteJSON(response)
-
-	// Puoi anche aggiornare gli altri giocatori con lo stato aggiornato del gioco
-	// Utilizzando la funzione UpdateGameBoard o UpdateGameStatus che abbiamo discusso prima
+	// Rimuovi la connessione dalla mappa quando il client si disconnette
+	connMutex.Lock()
+	delete(connections, conn)
+	connMutex.Unlock()
 }

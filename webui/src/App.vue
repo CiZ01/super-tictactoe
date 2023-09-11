@@ -34,7 +34,6 @@ export default {
       if (win) {
         this.finished = true;
         this.message = `Ha vinto il giocatore ${player}`;
-        return;
       }
 
       this.nextMove(index);
@@ -55,12 +54,9 @@ export default {
       this.lastPlayer = 0;
     },
   },
-
-
 }
 
 </script>
-
 
 <template>
   <div id="app">
@@ -82,7 +78,6 @@ export default {
     <button @click="resetBoard">Resetta Griglia</button>
   </div>
 </template>
-
 
 <style>
 body {

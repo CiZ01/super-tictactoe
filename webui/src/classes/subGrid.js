@@ -30,13 +30,12 @@ export default class SubGrid {
         this.grid[box] = player;
         this.gridSize++;
 
-        if (this.checkWin()) {
+        // if the match is a draw, the winner is the player who played last
+        if (this.checkWin() || this,this.gridSize === 9) {
             this.winner = player;
             return [1, null];
         }
 
-        // if the match is a draw, the winner is the player who played last
-        if (this.gridSize === 9) return [1, null];
 
         return [0, null];
     }

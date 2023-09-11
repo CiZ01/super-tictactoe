@@ -2,20 +2,22 @@ package main
 
 import (
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 // Lobby rappresenta la lobby del gioco, che tiene traccia degli utenti, delle partite e dei giocatori in attesa.
 type Lobby struct {
-	users   map[string]*User  // Mappa degli utenti con ID come chiave
-	matches map[string]*Match // Mappa delle partite con ID come chiave
-	waiting []*User           // Slice degli utenti in attesa di una partita
-	mu      sync.Mutex        // Mutex per garantire accesso sicuro alla lobby
+	users   map[*websocket.Conn]*User // Mappa degli utenti con ID come chiave
+	matches map[string]*Match         // Mappa delle partite con ID come chiave
+	waiting []*User                   // Slice degli utenti in attesa di una partita
+	mu      sync.Mutex                // Mutex per garantire accesso sicuro alla lobby
 }
 
 // NewLobby crea una nuova istanza di Lobby.
 func NewLobby() *Lobby {
 	return &Lobby{
-		users:   make(map[string]*User),
+		users:   make(map[*websocket.Conn]*User),
 		matches: make(map[string]*Match),
 	}
 }
@@ -24,14 +26,14 @@ func NewLobby() *Lobby {
 func (l *Lobby) AddUser(user *User) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.users[user.ID] = user
+	l.users[user.Conn] = user
 }
 
 // RemoveUser rimuove un utente dalla lobby.
-func (l *Lobby) RemoveUser(userID string) {
+func (l *Lobby) RemoveUser(userConn *websocket.Conn) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	delete(l.users, userID)
+	delete(l.users, userConn)
 }
 
 // AddToWaiting aggiunge un utente alla lista degli utenti in attesa.
@@ -42,15 +44,22 @@ func (l *Lobby) AddToWaiting(user *User) {
 }
 
 // RemoveFromWaiting rimuove un utente dalla lista degli utenti in attesa.
-func (l *Lobby) RemoveFromWaiting(userID string) {
+func (l *Lobby) RemoveFromWaiting(conn *websocket.Conn) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	for i, user := range l.waiting {
-		if user.ID == userID {
+		if user.Conn == conn {
 			l.waiting = append(l.waiting[:i], l.waiting[i+1:]...)
 			break
 		}
 	}
+}
+
+// get user by connection's identifier
+func (l *Lobby) GetUserByConn(conn *websocket.Conn) *User {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.users[conn]
 }
 
 // Match rappresenta una partita in corso tra due giocatori.

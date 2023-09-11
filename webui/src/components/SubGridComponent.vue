@@ -52,7 +52,6 @@ export default {
       }
       if (win) {
         this.finished = true;
-        console.log(`Ha vinto il giocatore ${player}!!!!!!!!!!!!!!`)
         this.$emit('game-over', this.subGrid.winner);
         return;
       }
