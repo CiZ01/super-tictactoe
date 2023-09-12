@@ -53,6 +53,7 @@ export default {
       if (win) {
         this.finished = true;
         this.$emit('game-over', this.subGrid.winner);
+        this.$emit('next-move', index);
         return;
       }
       this.$emit('next-move', index);

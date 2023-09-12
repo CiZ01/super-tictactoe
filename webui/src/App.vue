@@ -35,7 +35,6 @@ export default {
         this.finished = true;
         this.message = `Ha vinto il giocatore ${player}`;
       }
-
       this.nextMove(index);
     },
 
@@ -63,7 +62,7 @@ export default {
     <h1>Tic Tac Toe</h1>
     <div class="board">
       <div class="cell" :class="{ 'completed-cell': masterGrid.grid[index] != 0 }" v-for="(box, index) in masterGrid.grid" :key="index">
-        <div class="shadow-box" v-if="nextBox != -1 && nextBox != index">
+        <div class="shadow-box" v-if="nextBox != -1 && nextBox != index && masterGrid.grid[index] === 0">
         </div>
         <SubGridComponent :player="lastPlayer" :currentIndex="nextBox" :myIndex="index" 
                           @game-over="(player) => setBox(index, player)" 

@@ -31,7 +31,7 @@ export default class SubGrid {
         this.gridSize++;
 
         // if the match is a draw, the winner is the player who played last
-        if (this.checkWin() || this,this.gridSize === 9) {
+        if (this.checkWin() || this.gridSize === 9) {
             this.winner = player;
             return [1, null];
         }
